@@ -1,19 +1,11 @@
-function initializeLocalStorage() {
-	if (!localStorage.getItem("userDiary")) {
-		const data = {
-			dataCount: 0,
-			diaries: [],
-		};
-		localStorage.setItem("userDiary", JSON.stringify(data));
-	}
-}
+const API_URL = '/api/notes';
 
 async function loadData() {
 	try {
-		initializeLocalStorage();
-		const data = JSON.parse(localStorage.getItem("userDiary"));
-		createCards(data.diaries);
-		localStorage.setItem("userDiary", JSON.stringify(data));
+		const response = await fetch(API_URL);
+		if (!response.ok) throw new Error('Failed to fetch data');
+		const notes = await response.json();
+		createCards(notes);
 	} catch (error) {
 		console.error("Error loading data:", error);
 	}
@@ -21,8 +13,9 @@ async function loadData() {
 
 function createCards(data) {
 	const cardContainer = document.querySelector(".card-container");
+    cardContainer.innerHTML = "";
 
-	data.forEach(({ id, title, content, created }) => {
+	data.forEach(({ id, judul, isi, tanggal_dibuat }) => {
 		const wrapper = document.createElement("div");
 		wrapper.classList.add("wrapper");
 
@@ -31,7 +24,7 @@ function createCards(data) {
 
 		const cardTitle = document.createElement("h3");
 		cardTitle.classList.add("card-title");
-		cardTitle.textContent = title;
+		cardTitle.textContent = judul;
 
 		frontFace.appendChild(cardTitle);
 
@@ -40,17 +33,20 @@ function createCards(data) {
 
 		const cardContent = document.createElement("p");
 		cardContent.classList.add("card-content");
-		if (content.length > 110) {
-			content = content.substring(0, 110) + "...";
+        
+        let contentDisplay = isi;
+		if (contentDisplay.length > 110) {
+			contentDisplay = contentDisplay.substring(0, 110) + "...";
 		}
-		cardContent.textContent = content;
+		cardContent.textContent = contentDisplay;
 		backFace.appendChild(cardContent);
 
 		const cardFooter = document.createElement("div");
 		cardFooter.classList.add("card-footer");
 
 		const createdDate = document.createElement("span");
-		createdDate.textContent = created;
+        const dateObj = new Date(tanggal_dibuat);
+		createdDate.textContent = dateObj.toLocaleDateString();
 
 		cardFooter.appendChild(createdDate);
 
@@ -72,7 +68,6 @@ function createCards(data) {
 		actionBtns.appendChild(deleteLink);
 
 		cardFooter.appendChild(actionBtns);
-
 		backFace.appendChild(cardFooter);
 
 		wrapper.appendChild(frontFace);
@@ -88,7 +83,9 @@ function createCards(data) {
 		deleteLink.addEventListener("click", (e) => {
 			e.preventDefault();
 			e.stopPropagation();
-			deleteDiary(id);
+            if(confirm("Apakah Anda yakin ingin menghapus catatan ini?")) {
+			    deleteDiary(id);
+            }
 		});
 
 		editLink.addEventListener("click", (e) => {
@@ -99,15 +96,19 @@ function createCards(data) {
 	});
 }
 
-function deleteDiary(id) {
-	let data = JSON.parse(localStorage.getItem("userDiary"));
-
-	data.diaries = data.diaries.filter((diary) => diary.id !== id);
-
-	localStorage.setItem("userDiary", JSON.stringify(data));
-
-	document.querySelector(".card-container").innerHTML = "";
-	loadData();
+async function deleteDiary(id) {
+    try {
+        const response = await fetch(`${API_URL}/${id}`, {
+            method: 'DELETE'
+        });
+        if (response.ok) {
+            loadData();
+        } else {
+            console.error('Failed to delete note');
+        }
+    } catch (error) {
+        console.error('Error deleting note:', error);
+    }
 }
 
 loadData();

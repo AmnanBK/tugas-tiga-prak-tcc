@@ -3,51 +3,64 @@ const cancelBtn = document.querySelector("#btn-cancel");
 
 const urlParams = new URLSearchParams(window.location.search);
 const diaryId = urlParams.get("id");
+const API_URL = '/api/notes';
 
-let currentDiary = null;
 if (diaryId) {
-	const data = JSON.parse(localStorage.getItem("userDiary"));
-	currentDiary = data.diaries.find((diary) => diary.id === parseInt(diaryId));
-
-	if (currentDiary) {
-		document.querySelector("#title").value = currentDiary.title;
-		document.querySelector("#content").value = currentDiary.content;
-		addBtn.textContent = "Update Diary";
-	} else {
-		console.error("Diary not found.");
-	}
+    // Edit mode: fetch existing data
+    fetch(`${API_URL}/${diaryId}`)
+        .then(response => {
+            if (!response.ok) throw new Error("Note not found");
+            return response.json();
+        })
+        .then(data => {
+            document.querySelector("#title").value = data.judul;
+            document.querySelector("#content").value = data.isi;
+            addBtn.textContent = "Update Diary";
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Gagal memuat catatan.");
+        });
 }
 
-addBtn.addEventListener("click", () => {
-	const title = document.querySelector("#title").value;
-	const content = document.querySelector("#content").value;
+addBtn.addEventListener("click", async () => {
+	const judul = document.querySelector("#title").value;
+	const isi = document.querySelector("#content").value;
 
-	const data = JSON.parse(localStorage.getItem("userDiary"));
+    if (!judul || !isi) {
+        alert("Judul dan konten tidak boleh kosong.");
+        return;
+    }
 
-	if (diaryId) {
-		const diaryIndex = data.diaries.findIndex(
-			(diary) => diary.id === parseInt(diaryId)
-		);
-		if (diaryIndex > -1) {
-			data.diaries[diaryIndex] = {
-				id: diaryId,
-				title: title,
-				content: content,
-				created: new Date().toLocaleDateString(),
-			};
-		}
-	} else {
-		data.diaries.push({
-			id: data.dataCount + 1,
-			title: title,
-			content: content,
-			created: new Date().toLocaleDateString(),
-		});
-		data.dataCount++;
-	}
+    const payload = { judul, isi };
 
-	localStorage.setItem("userDiary", JSON.stringify(data));
-	window.location.href = "../index.html";
+    try {
+        let response;
+        if (diaryId) {
+            // Update
+            response = await fetch(`${API_URL}/${diaryId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        } else {
+            // Create
+            response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        }
+
+        if (response.ok) {
+            window.location.href = "../index.html";
+        } else {
+            alert("Gagal menyimpan catatan.");
+        }
+    } catch (err) {
+        console.error("Error saving note: ", err);
+        alert("Terjadi kesalahan.");
+    }
 });
 
 cancelBtn.addEventListener("click", () => {
