@@ -84,19 +84,19 @@ function createCards(data) {
 			e.preventDefault();
 			e.stopPropagation();
             if(confirm("Apakah Anda yakin ingin menghapus catatan ini?")) {
-			    deleteDiary(id);
+			    deleteNote(id);
             }
 		});
 
 		editLink.addEventListener("click", (e) => {
 			e.preventDefault();
 			e.stopPropagation();
-			window.location.href = `html/diary.html?id=${id}`;
+			window.location.href = `html/note.html?id=${id}`;
 		});
 	});
 }
 
-async function deleteDiary(id) {
+async function deleteNote(id) {
     try {
         const response = await fetch(`${API_URL}/${id}`, {
             method: 'DELETE'

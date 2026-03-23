@@ -10,20 +10,20 @@ if (!id) {
             if(!res.ok) throw new Error("Not found");
             return res.json();
         })
-        .then(diary => {
-            const title = diary.judul;
+        .then(note => {
+            const title = note.judul;
             document.title = title;
 
             const titleContainer = document.querySelector(".title-container");
             const contentContainer = document.querySelector(".content-container");
-            const diaryTittle = document.createElement("h1");
-            diaryTittle.textContent = title;
-            diaryTittle.classList.add("main-title");
-            titleContainer.appendChild(diaryTittle);
+            const noteTittle = document.createElement("h1");
+            noteTittle.textContent = title;
+            noteTittle.classList.add("main-title");
+            titleContainer.appendChild(noteTittle);
             
-            const diaryContent = document.createElement("p");
-            diaryContent.innerHTML = diary.isi.replace(/\n/g, "<br>");
-            contentContainer.appendChild(diaryContent);
+            const noteContent = document.createElement("p");
+            noteContent.innerHTML = note.isi.replace(/\n/g, "<br>");
+            contentContainer.appendChild(noteContent);
         })
         .catch(err => {
             console.error(err);
