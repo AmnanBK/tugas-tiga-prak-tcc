@@ -1,14 +1,42 @@
-const mysql = require('mysql2/promise');
+const { Sequelize, DataTypes } = require('sequelize');
 
-// Setup your local database credentials here
-const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',      // Adjust to your local MySQL username
-    password: '',      // Adjust to your local MySQL password
-    database: 'notes_db',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
+const sequelize = new Sequelize(
+    process.env.DB_NAME || 'notes_db',
+    process.env.DB_USER || 'root',
+    process.env.DB_PASS || '',
+    {
+        host: process.env.DB_HOST || 'localhost',
+        dialect: 'mysql',
+        logging: false,
+        dialectOptions: {
+            ssl: {
+                rejectUnauthorized: false,
+            },
+        },
+    },
+);
+
+const Note = sequelize.define('Note', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    judul: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    isi: {
+        type: DataTypes.TEXT,
+        allowNull: false
+    },
+    tanggal_dibuat: {
+        type: DataTypes.DATEONLY,
+        allowNull: false
+    }
+}, {
+    tableName: 'notes',
+    timestamps: false
 });
 
-module.exports = pool;
+module.exports = { sequelize, Note };
