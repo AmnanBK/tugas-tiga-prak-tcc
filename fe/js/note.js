@@ -2,12 +2,12 @@ const addBtn = document.querySelector("#btn-add");
 const cancelBtn = document.querySelector("#btn-cancel");
 
 const urlParams = new URLSearchParams(window.location.search);
-const diaryId = urlParams.get("id");
-const API_URL = '/api/notes';
+const noteId = urlParams.get("id");
 
-if (diaryId) {
+
+if (noteId) {
     // Edit mode: fetch existing data
-    fetch(`${API_URL}/${diaryId}`)
+    fetch(`${API_URL}/${noteId}`)
         .then(response => {
             if (!response.ok) throw new Error("Note not found");
             return response.json();
@@ -16,7 +16,7 @@ if (diaryId) {
             const data = resData.data;
             document.querySelector("#title").value = data.judul;
             document.querySelector("#content").value = data.isi;
-            addBtn.textContent = "Update Diary";
+            addBtn.textContent = "Update Note";
         })
         .catch(err => {
             console.error(err);
@@ -25,8 +25,8 @@ if (diaryId) {
 }
 
 addBtn.addEventListener("click", async () => {
-    const judul = document.querySelector("#title").value;
-    const isi = document.querySelector("#content").value;
+	const judul = document.querySelector("#title").value;
+	const isi = document.querySelector("#content").value;
 
     if (!judul || !isi) {
         alert("Judul dan konten tidak boleh kosong.");
@@ -37,9 +37,9 @@ addBtn.addEventListener("click", async () => {
 
     try {
         let response;
-        if (diaryId) {
+        if (noteId) {
             // Update
-            response = await fetch(`${API_URL}/${diaryId}`, {
+            response = await fetch(`${API_URL}/${noteId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -65,5 +65,5 @@ addBtn.addEventListener("click", async () => {
 });
 
 cancelBtn.addEventListener("click", () => {
-    window.location.href = "../index.html";
+	window.location.href = "../index.html";
 });

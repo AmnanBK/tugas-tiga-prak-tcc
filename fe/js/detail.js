@@ -1,6 +1,6 @@
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get("id");
-const API_URL = '/api/notes';
+
 
 if (!id) {
     window.location.href = "../index.html";

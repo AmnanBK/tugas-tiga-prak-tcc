@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
 const sequelize = require("./config/database");
 const noteRoutes = require("./routes/noteRoutes");
 
@@ -13,9 +12,6 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Serve frontend static files
-app.use(express.static(path.join(__dirname, '/')));
 
 // Setting Routes
 require("./schema/Note"); // Untuk generate Tabel Notes

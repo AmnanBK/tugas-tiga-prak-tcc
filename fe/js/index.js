@@ -1,4 +1,4 @@
-const API_URL = '/api/notes';
+
 
 async function loadData() {
 	try {
