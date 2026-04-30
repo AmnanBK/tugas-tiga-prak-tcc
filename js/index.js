@@ -14,7 +14,15 @@ async function loadData() {
 function createCards(data) {
 	const cardContainer = document.querySelector(".card-container");
     cardContainer.innerHTML = "";
-
+	if (data.length === 0) {
+		cardContainer.innerHTML = `
+			<div class="empty-state">
+				<i class="bi bi-journal-text"></i>
+				<p>Belum ada catatan. Mulai tulis ide pertamamu!</p>
+			</div>
+		`;
+		return;
+	}
 	data.forEach(({ id, judul, isi, tanggal_dibuat }) => {
 		const wrapper = document.createElement("div");
 		wrapper.classList.add("wrapper");
