@@ -12,7 +12,8 @@ if (noteId) {
             if (!response.ok) throw new Error("Note not found");
             return response.json();
         })
-        .then(data => {
+        .then(resData => {
+            const data = resData.data;
             document.querySelector("#title").value = data.judul;
             document.querySelector("#content").value = data.isi;
             addBtn.textContent = "Update Note";

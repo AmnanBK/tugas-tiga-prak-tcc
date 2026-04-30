@@ -10,7 +10,8 @@ if (!id) {
             if(!res.ok) throw new Error("Not found");
             return res.json();
         })
-        .then(note => {
+        .then(resData => {
+            const note = resData.data;
             const title = note.judul;
             document.title = title;
 

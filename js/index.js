@@ -4,8 +4,8 @@ async function loadData() {
 	try {
 		const response = await fetch(API_URL);
 		if (!response.ok) throw new Error('Failed to fetch data');
-		const notes = await response.json();
-		createCards(notes);
+		const responseData = await response.json();
+		createCards(responseData.data);
 	} catch (error) {
 		console.error("Error loading data:", error);
 	}

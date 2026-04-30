@@ -1,9 +1,0 @@
-CREATE DATABASE IF NOT EXISTS notes_db;
-USE notes_db;
-
-CREATE TABLE IF NOT EXISTS notes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    judul VARCHAR(255) NOT NULL,
-    isi TEXT NOT NULL,
-    tanggal_dibuat DATE NOT NULL
-);
